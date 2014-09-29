@@ -1,5 +1,7 @@
 #include <avr/interrupt.h>
 #include <string.h>
+//#include <SoftwareSerial.h>
+
 #define AXIS_X 1
 #define AXIS_Y 2
 #define AXIS_Z 3
@@ -10,6 +12,9 @@ volatile int current_layer = 0;
 void setup()
 {
   int i;
+  
+  Serial.begin(9600);
+  Serial.println("Arduino ready!");
   
   for(i=0; i<14; i++)
     pinMode(i, OUTPUT);
@@ -69,28 +74,94 @@ void loop()
 {
   int i,x,y,z;
   
+  String content = "";
+  char character;
+
   while (true)
   {
+
+    if(Serial.available()) {
+        character = Serial.read();
+        content = "";
+        content.concat(character);
+        Serial.println(content);
+    }
     
-    effect_planboing(AXIS_Z, 2000);
-    //effect_planboing(AXIS_Y, 1000);
-    //effect_planboing(AXIS_X, 1000);
-    
-    //effect_blinky2();
-    
-    //effect_random_filler(75,1);
-    //effect_random_filler(75,0);
-    
-    //effect_rain(100);
+    if (content == "0"){
+      fill(0x00);    
+    }
    
-    //effect_boxside_randsend_parallel (AXIS_X, 0, 150, 1);
-    //effect_boxside_randsend_parallel (AXIS_X, 1, 150, 1);
-    //effect_boxside_randsend_parallel (AXIS_Y, 0, 150, 1);
-    //effect_boxside_randsend_parallel (AXIS_Y, 1, 150, 1);
-    //effect_boxside_randsend_parallel (AXIS_Z, 0, 150, 1);
-    //effect_boxside_randsend_parallel (AXIS_Z, 1, 150, 1);
+    if (content == "1") {
+      effect_blinky2();
+    }
+    
+    if(content == "2") {
+      effect_planboing(AXIS_Z, 3000);
+      //effect_planboing(AXIS_Y, 3000);
+      effect_planboing(AXIS_X, 3000);
+    }
+    
+    if(content == "3") {
+      effect_rain(100);
+    }
+    
+    if(content == "4") {
+      effect_random_filler(75,1);
+      effect_random_filler(75,0);
+    }
+        
+    if(content == "5") {
+      effect_boxside_randsend_parallel (AXIS_X, 0, 150, 1);
+      effect_boxside_randsend_parallel (AXIS_X, 1, 150, 1);
+      effect_boxside_randsend_parallel (AXIS_Y, 0, 150, 1);
+      effect_boxside_randsend_parallel (AXIS_Y, 1, 150, 1);
+      effect_boxside_randsend_parallel (AXIS_Z, 0, 150, 1);
+      effect_boxside_randsend_parallel (AXIS_Z, 1, 150, 1);
+    }
+    
+    if(content == "6") {
+      effect_blinky2();
+      effect_planboing(AXIS_Z, 3000);
+      //effect_planboing(AXIS_Y, 3000);
+      effect_planboing(AXIS_X, 3000);
+      effect_rain(100);
+      effect_random_filler(75,1);
+      effect_random_filler(75,0);
+      effect_boxside_randsend_parallel (AXIS_X, 0, 150, 1);
+      effect_boxside_randsend_parallel (AXIS_X, 1, 150, 1);
+      effect_boxside_randsend_parallel (AXIS_Y, 0, 150, 1);
+      effect_boxside_randsend_parallel (AXIS_Y, 1, 150, 1);
+      effect_boxside_randsend_parallel (AXIS_Z, 0, 150, 1);
+      effect_boxside_randsend_parallel (AXIS_Z, 1, 150, 1);
+    }
+  }
+  
+  
+  //if (Serial.available())
+    //Serial.write(Serial.read());
+  /*
+  while (true)
+  {
+    effect_planboing(AXIS_Z, 3000);
+    //effect_planboing(AXIS_Y, 3000);
+    effect_planboing(AXIS_X, 3000);
+    
+    effect_blinky2();
+    
+    effect_random_filler(75,1);
+    effect_random_filler(75,0);
+    
+    effect_rain(100);
+   
+    effect_boxside_randsend_parallel (AXIS_X, 0, 150, 1);
+    effect_boxside_randsend_parallel (AXIS_X, 1, 150, 1);
+    effect_boxside_randsend_parallel (AXIS_Y, 0, 150, 1);
+    effect_boxside_randsend_parallel (AXIS_Y, 1, 150, 1);
+    effect_boxside_randsend_parallel (AXIS_Z, 0, 150, 1);
+    effect_boxside_randsend_parallel (AXIS_Z, 1, 150, 1);
     
   }
+  */
 }
 
 
@@ -326,7 +397,7 @@ void setvoxel(int x, int y, int z)
 }
 
 
-// Set a single voxel to ON
+// Set a single voxel to OFF
 void clrvoxel(int x, int y, int z)
 {
 	if (inrange(x,y,z))
